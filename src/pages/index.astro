@@ -1,11 +1,11 @@
 ---
 import { client } from '../lib/microcms';
 
-// microCMSから各APIのデータを取得
-const eventsRes = await client.get({ endpoint: 'events' }).catch(() => ({ contents: [] }));
-const documentsRes = await client.get({ endpoint: 'general-meetings' }).catch(() => ({ contents: [] }));
-const reportsRes = await client.get({ endpoint: 'reports' }).catch(() => ({ contents: [] }));
-const officersRes = await client.get({ endpoint: 'officers' }).catch(() => ({ contents: [] }));
+// microCMSから各APIのデータを最大100件まで取得するように変更
+const eventsRes = await client.get({ endpoint: 'events', queries: { limit: 100 } }).catch(() => ({ contents: [] }));
+const documentsRes = await client.get({ endpoint: 'general-meetings', queries: { limit: 100 } }).catch(() => ({ contents: [] }));
+const reportsRes = await client.get({ endpoint: 'reports', queries: { limit: 100 } }).catch(() => ({ contents: [] }));
+const officersRes = await client.get({ endpoint: 'officers', queries: { limit: 100 } }).catch(() => ({ contents: [] }));
 
 const events = eventsRes.contents;
 const documents = documentsRes.contents;
