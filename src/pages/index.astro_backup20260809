@@ -43,29 +43,14 @@ const officers = officersRes.contents;
         .hero p { font-size: 1.1em; opacity: 0.9; max-width: 700px; margin: 0 auto; }
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
         .section-title { font-size: 1.4em; color: var(--primary-color); border-left: 5px solid var(--primary-color); padding-left: 15px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        
-        /* リスト系のスタイル */
         .news-list { list-style: none; padding: 0; margin: 0; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 20px; }
-        .news-list li { border-bottom: 1px dashed var(--border-color); padding: 15px 0; display: flex; flex-direction: column; gap: 10px; }
+        .news-list li { border-bottom: 1px dashed var(--border-color); padding: 12px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
         .news-list li:last-child { border-bottom: none; }
-        .news-header { display: flex; align-items: center; flex-wrap: wrap; gap: 15px; width: 100%; }
-        .news-date { font-weight: bold; color: #666; font-size: 0.95em; width: 100px; flex: 0 0 100px; }
-        .badge { 
-            padding: 4px 10px; 
-            border-radius: 4px; 
-            font-size: 0.8em; 
-            font-weight: bold; 
-            color: white; 
-            text-align: center; 
-            width: 80px;          /* ★長さを80pxに固定 */
-            flex: 0 0 80px;       /* ★勝手に伸び縮みするのを防ぐ */
-            box-sizing: border-box; 
-        }
+        .news-date { font-weight: bold; color: #666; font-size: 0.95em; min-width: 100px; }
+        .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.8em; font-weight: bold; color: white; text-align: center; min-width: 60px; }
         .badge.event { background-color: var(--primary-color); }
         .badge.info { background-color: #7f8c8d; }
-        .news-title { flex: 1; font-size: 1.05em; min-width: 200px; }
-        
-        /* 資料系のスタイル */
+        .news-title { flex: 1; font-size: 1.05em; }
         .document-list { list-style: none; padding: 0; margin: 0; }
         .document-item { background: white; border-radius: 6px; margin-bottom: 15px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border-left: 4px solid #7f8c8d; }
         .document-info { flex: 1; }
@@ -73,23 +58,17 @@ const officers = officersRes.contents;
         .document-title { font-size: 1.1em; color: var(--text-color); font-weight: bold; }
         .document-btn { background-color: var(--secondary-color); color: white; padding: 8px 15px; border-radius: 4px; font-size: 0.9em; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
         .document-btn:hover { background-color: var(--primary-color); text-decoration: none; color: white; }
-        
-        /* カード系のスタイル */
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
-        .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.08); transition: transform 0.2s; display: flex; flex-direction: column; color: var(--text-color); }
-        .card:hover { transform: translateY(-5px); }
-        .card-img { width: 100%; height: 180px; object-fit: cover; background-color: #ddd; cursor: pointer; }
-        .card-content { padding: 15px; flex: 1; }
+        .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.08); transition: transform 0.2s; display: block; color: var(--text-color); }
+        .card:hover { transform: translateY(-5px); text-decoration: none; color: inherit; }
+        .card-img { width: 100%; height: 180px; object-fit: cover; background-color: #ddd; }
+        .card-content { padding: 15px; }
         .card-date { font-size: 0.85em; color: #777; margin-bottom: 5px; }
         .card-title { font-weight: bold; font-size: 1.05em; margin: 0 0 10px 0; line-height: 1.4; }
-        
-        /* アコーディオン・もっと見るのスタイル */
-        details.news-detail { margin-top: 5px; padding: 10px; background: #f9f9f9; border-radius: 4px; font-size: 0.95em; color: #444; width: 100%; box-sizing: border-box; }
-        details.news-detail summary { cursor: pointer; font-weight: bold; color: var(--primary-color); outline: none; }
-        .hidden-item { display: none !important; }
-        .more-btn { display: block; width: 100%; padding: 12px; margin-top: 20px; text-align: center; background-color: white; border: 2px solid var(--primary-color); color: var(--primary-color); font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .more-btn:hover { background-color: var(--primary-color); color: white; }
-
+        .table-responsive { overflow-x: auto; }
+        table.officers { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        table.officers th, table.officers td { border: 1px solid var(--border-color); padding: 15px; text-align: left; }
+        table.officers th { background-color: #f8fafc; width: 25%; color: var(--primary-color); font-weight: bold; }
         footer { background-color: #2c3e50; color: #ddd; padding: 40px 20px 20px; margin-top: 60px; font-size: 0.9em; }
         .footer-inner { max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between; }
         .footer-info p { margin: 5px 0; }
@@ -101,6 +80,8 @@ const officers = officersRes.contents;
             .document-item { flex-direction: column; align-items: flex-start; gap: 10px; }
             .document-btn { width: 100%; justify-content: center; box-sizing: border-box; }
         }
+details.news-detail { margin-top: 5px; padding: 10px; background: #f9f9f9; border-radius: 4px; font-size: 0.95em; color: #444; }
+details.news-detail summary { cursor: pointer; font-weight: bold; color: var(--primary-color); outline: none; }
     </style>
 </head>
 <body>
@@ -138,10 +119,18 @@ const officers = officersRes.contents;
                     <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color); font-size: 1.1em;">
                         協会概要・沿革・活動領域を詳しく見る
                     </summary>
+                    
                     <div style="margin-top: 20px; line-height: 1.8; font-size: 0.95em; color: #333;">
-                        <h3 style="color: var(--primary-color); font-size: 1.1em; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-top: 0;">1. はじめに</h3>
-                        <p>表面技術協会は、金属をはじめ、プラスチック、セラミック等の素材へのめっき、化成処理，塗装，研磨，洗浄，熱処理などの技術とその関連分野を扱っております。<br>会員は、表面技術に携わる研究者、技術者、企業、研究機関、学生などから構成されており、会員組織の学術団体として積極的な活動を展開しております。<br>現在の会員数は、<strong>個人正会員 約1,700名、団体正会員 約360社</strong>です。</p>
                         
+                        <!-- はじめに -->
+                        <h3 style="color: var(--primary-color); font-size: 1.1em; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-top: 0;">1. はじめに</h3>
+                        <p>
+                            表面技術協会は、金属をはじめ、プラスチック、セラミック等の素材へのめっき、化成処理，塗装，研磨，洗浄，熱処理などの技術とその関連分野を扱っております。<br>
+                            会員は、表面技術に携わる研究者、技術者、企業、研究機関、学生などから構成されており、会員組織の学術団体として積極的な活動を展開しております。<br>
+                            現在の会員数は、<strong>個人正会員 約1,700名、団体正会員 約360社</strong>です。
+                        </p>
+
+                        <!-- 沿革 -->
                         <h3 style="color: var(--primary-color); font-size: 1.1em; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-top: 25px;">2. 沿革</h3>
                         <ul style="padding-left: 20px; margin: 10px 0;">
                             <li><strong>1950年06月01日：</strong> 文部省の認可により「社団法人金属表面技術協会」として設立登記</li>
@@ -149,27 +138,39 @@ const officers = officersRes.contents;
                             <li><strong>2011年01月04日：</strong> 公益法人改革にともなう新法人格への移行により、「一般社団法人表面技術協会」として設立登記</li>
                         </ul>
 
+                        <!-- 活動領域 -->
                         <h3 style="color: var(--primary-color); font-size: 1.1em; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-top: 25px;">3. 活動領域</h3>
-                        <p><strong>○ 表面の物理的被覆に関わる分野</strong><br>物理蒸着（PVD），溶射，溶融めっき，吸着，塗布・塗装，泳動電着（電着塗装），ライニング，イオン注入，拡散被覆</p>
-                        <p><strong>○ 表面の化学的被覆に関わる分野</strong><br>化学蒸着（CVD），電気めっき・電鋳，無電解めっき，アノード析出，熱分解・ゾル－ゲル法，熱処理（酸化・窒化・炭化），アノード酸化，化成処理</p>
-                        <p><strong>○ 表面からの物質除去に関わる分野</strong><br>機械研磨・研削，化学研磨・電解研磨，化学エッチング・電解エッチング，気相エッチング，電解加工，洗浄</p>
-                        <p><strong>○ 表面処理の実務に関わる分野</strong><br>プロセス管理（省力・省エネルギー），検査・品質管理，作業環境対策，廃ガス・廃水・廃棄物対策，資源リサイクル対策，工場設備・機器・部品</p>
-                        <p><strong>○ 表面技術に関連する諸分野</strong><br>表面解析・表面分析，表面物性，表面機能応用（触媒，センサーなど），電析応用（金属微粉・電池など），腐食・防食，微細加工プロセス（半導体など）</p>
+                        
+                        <p><strong>○ 表面の物理的被覆に関わる分野</strong><br>
+                        物理蒸着（PVD），溶射，溶融めっき，吸着，塗布・塗装，泳動電着（電着塗装），ライニング，イオン注入，拡散被覆</p>
+
+                        <p><strong>○ 表面の化学的被覆に関わる分野</strong><br>
+                        化学蒸着（CVD），電気めっき・電鋳，無電解めっき，アノード析出，熱分解・ゾル－ゲル法，熱処理（酸化・窒化・炭化），アノード酸化，化成処理</p>
+
+                        <p><strong>○ 表面からの物質除去に関わる分野</strong><br>
+                        機械研磨・研削，化学研磨・電解研磨，化学エッチング・電解エッチング，気相エッチング，電解加工，洗浄</p>
+
+                        <p><strong>○ 表面処理の実務に関わる分野</strong><br>
+                        プロセス管理（省力・省エネルギー），検査・品質管理，作業環境対策，廃ガス・廃水・廃棄物対策，資源リサイクル対策，工場設備・機器・部品</p>
+
+                        <p><strong>○ 表面技術に関連する諸分野</strong><br>
+                        表面解析・表面分析，表面物性，表面機能応用（触媒，センサーなど），電析応用（金属微粉・電池など），腐食・防食，微細加工プロセス（半導体など）</p>
+
                     </div>
                 </details>
             </div>
         </section>
 
-        <!-- 新着情報（イベントは10件まで・詳細展開） -->
+        <!-- 新着情報（microCMS連携） -->
         <section id="news" style="margin-bottom: 60px;">
             <h2 class="section-title">新着情報・イベント予定</h2>
-            <ul class="news-list" id="list-events">
+<ul class="news-list">
                 {events.length === 0 ? (
                     <p style="padding: 10px; color: #666;">現在、新着情報はありません。</p>
                 ) : (
-                    events.map((item: any, index: number) => (
-                        <li class={index >= 10 ? "hidden-item" : ""}>
-                            <div class="news-header">
+                    events.map((item: any) => (
+                        <li style="flex-direction: column; align-items: stretch;">
+                            <div style="display: flex; align-items: center; gap: 15px; width: 100%;">
                                 <div class="news-date">{new Date(item.date).toLocaleDateString()}</div>
                                 <div class={`badge ${item.category === 'イベント' ? 'event' : 'info'}`}>{item.category}</div>
                                 <div class="news-title"><strong>{item.title}</strong></div>
@@ -184,97 +185,70 @@ const officers = officersRes.contents;
                     ))
                 )}
             </ul>
-            {events.length > 10 && (
-                <button class="more-btn" onclick="showAll('list-events', this)">すべて表示する</button>
-            )}
         </section>
 
-        <!-- 総会・公開資料（6件まで） -->
+        <!-- 総会・公開資料（microCMS連携） -->
         <section id="documents" style="margin-bottom: 60px;">
             <h2 class="section-title">総会・公開資料</h2>
             <p style="color: #666; font-size: 0.95em; margin-bottom: 15px;">当支部の事業計画、決算、規程等の資料（PDF）をダウンロードいただけます。</p>
             
-            <ul class="document-list" id="list-docs">
+            <ul class="document-list">
                 {documents.length === 0 ? (
                     <p style="padding: 10px; color: #666;">公開資料が登録されていません。</p>
                 ) : (
-                    documents.map((doc: any, index: number) => (
-                        <li class={`document-item ${index >= 6 ? "hidden-item" : ""}`}>
+                    documents.map((doc: any) => (
+                        <li class="document-item">
                             <div class="document-info">
-                                <div class="document-year">{doc.yearlabel} ({new Date(doc.date).toLocaleDateString()} 公開)</div>
+                                <div class="document-year">{doc.yearLabel} ({new Date(doc.date).toLocaleDateString()} 公開)</div>
                                 <div class="document-title">{doc.title}</div>
                             </div>
-                            <a href={doc.file} target="_blank" rel="noopener noreferrer" class="document-btn">資料を表示</a>
+                            <a href={doc.pdfUrl} target="_blank" rel="noopener noreferrer" class="document-btn">PDFをダウンロード</a>
                         </li>
                     ))
                 )}
             </ul>
-            {documents.length > 6 && (
-                <button class="more-btn" onclick="showAll('list-docs', this)">すべて表示する</button>
-            )}
         </section>
 
-        <!-- 活動報告（6件まで・写真と詳細展開） -->
+        <!-- 活動報告（microCMS連携） -->
         <section id="reports" style="margin-bottom: 60px;">
             <h2 class="section-title">活動報告ピックアップ</h2>
             <p style="color: #666; font-size: 0.95em; margin-bottom: 20px;">支部の見学会や研究交流など、最近の活動の様子をご紹介します。</p>
             
-            <div class="card-grid" id="list-reports">
+            <div class="card-grid">
                 {reports.length === 0 ? (
                     <p style="color: #666;">活動報告が登録されていません。</p>
                 ) : (
-                    reports.map((report: any, index: number) => (
-                        <div class={`card ${index >= 6 ? "hidden-item" : ""}`}>
-                            {/* サムネイルをクリックで詳細を開く（onclickで直後のdetailsを操作） */}
-                            {report.thumnail && (
-                                <img src={report.thumnail.url} alt="" class="card-img" onclick="this.parentElement.querySelector('details').open = true;" />
-                            )}
+                    reports.map((report: any) => (
+                        <a href="#" class="card">
+                            {report.thumbnail && <img src={report.thumbnail.url} alt="" class="card-img" />}
                             <div class="card-content">
                                 <div class="card-date">{new Date(report.date).toLocaleDateString()}</div>
                                 <h3 class="card-title">{report.title}</h3>
-                                
-                                <details class="news-detail" style="margin-top: 15px;">
-                                    <summary>活動内容・写真を見る</summary>
-                                    <div style="margin-top: 10px;">
-                                        {report.content && <div set:html={report.content}></div>}
-                                        {report.picture && report.picture.map((pic: any) => (
-                                            <div style="margin-top: 10px;">
-                                                <img src={pic.url} alt="活動写真" style="max-width: 100%; border-radius: 4px;" />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </details>
                             </div>
-                        </div>
+                        </a>
                     ))
                 )}
             </div>
-            {reports.length > 6 && (
-                <button class="more-btn" onclick="showAll('list-reports', this)">すべて表示する</button>
-            )}
         </section>
 
-        <!-- 役員名簿（6件まで） -->
+        <!-- 役員名簿（microCMS連携・PDFリンク形式） -->
         <section id="officers">
             <h2 class="section-title">役員名簿</h2>
-            <ul class="document-list" id="list-officers">
+            <ul class="document-list">
                 {officers.length === 0 ? (
-                    <p style="color: #666;">役員名簿が登録されていません。</p>
+                    <p style="color: #666; color: #666;">役員名簿が登録されていません。</p>
                 ) : (
-                    officers.map((off: any, index: number) => (
-                        <li class={`document-item ${index >= 6 ? "hidden-item" : ""}`}>
+                    officers.map((off: any) => (
+                        <li class="document-item">
                             <div class="document-info">
                                 <div class="document-year">{new Date(off.date).toLocaleDateString()} 公開</div>
-                                <div class="document-title">{off.yearlabel}</div>
+                                <div class="document-title">{off.yearLabel}</div>
                             </div>
-                            <a href={off.pdfurl} target="_blank" rel="noopener noreferrer" class="document-btn">名簿を表示</a>
+                            <a href={off.pdfUrl} target="_blank" rel="noopener noreferrer" class="document-btn">名簿PDFをダウンロード</a>
                         </li>
                     ))
                 )}
             </ul>
-            {officers.length > 6 && (
-                <button class="more-btn" onclick="showAll('list-officers', this)">すべて表示する</button>
-            )}
         </section>
 
     </div>
@@ -296,17 +270,5 @@ const officers = officersRes.contents;
         </div>
     </footer>
 
-    <!-- もっと見る（すべて表示）機能のスクリプト -->
-    <script is:inline>
-        function showAll(listId, button) {
-            const list = document.getElementById(listId);
-            const hiddenItems = list.querySelectorAll('.hidden-item');
-            hiddenItems.forEach(item => {
-                item.classList.remove('hidden-item');
-            });
-            // ボタンを非表示にする
-            button.style.display = 'none';
-        }
-    </script>
 </body>
 </html>
