@@ -11,22 +11,6 @@ const events = eventsRes.contents;
 const documents = documentsRes.contents;
 const reports = reportsRes.contents;
 const officers = officersRes.contents;
-
-// --- スライドショー用の画像抽出 ---
-// reportsの中からすべての thumnail と picture のURLを抽出
-const rawSlideImages = [];
-reports.forEach((report: any) => {
-    if (report.thumnail && report.thumnail.url) {
-        rawSlideImages.push(report.thumnail.url);
-    }
-    if (report.picture && Array.isArray(report.picture)) {
-        report.picture.forEach((pic: any) => {
-            if (pic.url) rawSlideImages.push(pic.url);
-        });
-    }
-});
-// 念のため重複を削除
-const slideImages = [...new Set(rawSlideImages)];
 ---
 
 <!DOCTYPE html>
@@ -54,34 +38,9 @@ const slideImages = [...new Set(rawSlideImages)];
         nav ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 20px; flex-wrap: wrap; }
         nav a { font-weight: bold; color: #555; }
         nav a:hover { color: var(--primary-color); }
-        
-        /* ヒーロー（ブルーのバー）エリアのスタイル追加 */
-        .hero { 
-            position: relative; /* オーバーレイ用 */
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); 
-            color: white; 
-            padding: 80px 20px; /* スライドが見やすいように少し広く */
-            text-align: center; 
-            background-size: cover; 
-            background-position: center;
-            transition: background-image 1.5s ease-in-out; /* スライドの切り替えアニメーション */
-        }
-        /* テキストを読みやすくするための半透明の黒い膜 */
-        .hero::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 59, 115, 0.7); /* プライマリーカラーベースの半透明 */
-            z-index: 1;
-        }
-        /* テキスト自体は前面に出す */
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-        .hero h2 { margin: 0 0 15px 0; font-size: 2em; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .hero p { font-size: 1.1em; opacity: 0.95; max-width: 700px; margin: 0 auto; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        
+        .hero { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 60px 20px; text-align: center; }
+        .hero h2 { margin: 0 0 15px 0; font-size: 2em; letter-spacing: 2px; }
+        .hero p { font-size: 1.1em; opacity: 0.9; max-width: 700px; margin: 0 auto; }
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
         .section-title { font-size: 1.4em; color: var(--primary-color); border-left: 5px solid var(--primary-color); padding-left: 15px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         
@@ -163,12 +122,9 @@ const slideImages = [...new Set(rawSlideImages)];
         </div>
     </header>
 
-    <!-- ヒーローエリア。抽出した画像URL配列をデータ属性として渡す -->
-    <div class="hero" id="hero-slider" data-images={JSON.stringify(slideImages)}>
-        <div class="hero-content">
-            <h2>表面技術とスマートプロセスの発展へ</h2>
-            <p>東北地域における産学官の連携を深め、<br>表面技術に関する学術・技術の交流と発展を推進しています。</p>
-        </div>
+    <div class="hero">
+        <h2>表面技術とスマートプロセスの発展へ</h2>
+        <p>東北地域における産学官の連携を深め、<br>表面技術に関する学術・技術の交流と発展を推進しています。</p>
     </div>
 
     <div class="container">
@@ -340,50 +296,17 @@ const slideImages = [...new Set(rawSlideImages)];
         </div>
     </footer>
 
-    <!-- スクリプト群 -->
+    <!-- もっと見る（すべて表示）機能のスクリプト -->
     <script is:inline>
-        // もっと見る（すべて表示）機能
         function showAll(listId, button) {
             const list = document.getElementById(listId);
             const hiddenItems = list.querySelectorAll('.hidden-item');
             hiddenItems.forEach(item => {
                 item.classList.remove('hidden-item');
             });
+            // ボタンを非表示にする
             button.style.display = 'none';
         }
-
-        // スライドショー機能
-        document.addEventListener("DOMContentLoaded", () => {
-            const hero = document.getElementById('hero-slider');
-            if (!hero) return;
-
-            // HTMLのデータ属性から画像URLの配列を取得
-            let images = [];
-            try {
-                images = JSON.parse(hero.getAttribute('data-images') || '[]');
-            } catch(e) {
-                console.error("画像の読み込みに失敗しました");
-            }
-
-            if (images.length > 0) {
-                // 配列をランダムにシャッフル
-                for (let i = images.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [images[i], images[j]] = [images[j], images[i]];
-                }
-
-                let currentIndex = 0;
-
-                // 最初の画像を設定
-                hero.style.backgroundImage = `url('${images[currentIndex]}')`;
-
-                // 5秒ごとに背景画像を切り替え
-                setInterval(() => {
-                    currentIndex = (currentIndex + 1) % images.length;
-                    hero.style.backgroundImage = `url('${images[currentIndex]}')`;
-                }, 5000);
-            }
-        });
     </script>
 </body>
 </html>
