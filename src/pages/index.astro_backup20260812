@@ -13,6 +13,7 @@ const reports = reportsRes.contents;
 const officers = officersRes.contents;
 
 // --- スライドショー用の画像抽出 ---
+// reportsの中からすべての thumnail と picture のURLを抽出
 const rawSlideImages = [];
 reports.forEach((report: any) => {
     if (report.thumnail && report.thumnail.url) {
@@ -24,6 +25,7 @@ reports.forEach((report: any) => {
         });
     }
 });
+// 念のため重複を削除
 const slideImages = [...new Set(rawSlideImages)];
 ---
 
@@ -53,25 +55,30 @@ const slideImages = [...new Set(rawSlideImages)];
         nav a { font-weight: bold; color: #555; }
         nav a:hover { color: var(--primary-color); }
         
-        /* ヒーロー（ブルーのバー）エリアのスタイル */
+        /* ヒーロー（ブルーのバー）エリアのスタイル追加 */
         .hero { 
-            position: relative;
+            position: relative; /* オーバーレイ用 */
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); 
             color: white; 
-            padding: 80px 20px;
+            padding: 80px 20px; /* スライドが見やすいように少し広く */
             text-align: center; 
             background-size: cover; 
             background-position: center;
-            transition: background-image 1.5s ease-in-out; 
+            transition: background-image 1.5s ease-in-out; /* スライドの切り替えアニメーション */
         }
+        /* テキストを読みやすくするための半透明の黒い膜 */
         .hero::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 59, 115, 0.7); 
+            background: rgba(0, 59, 115, 0.7); /* プライマリーカラーベースの半透明 */
             z-index: 1;
         }
-        .hero-content { position: relative; z-index: 2; }
+        /* テキスト自体は前面に出す */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
         .hero h2 { margin: 0 0 15px 0; font-size: 2em; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .hero p { font-size: 1.1em; opacity: 0.95; max-width: 700px; margin: 0 auto; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
         
@@ -84,7 +91,17 @@ const slideImages = [...new Set(rawSlideImages)];
         .news-list li:last-child { border-bottom: none; }
         .news-header { display: flex; align-items: center; flex-wrap: wrap; gap: 15px; width: 100%; }
         .news-date { font-weight: bold; color: #666; font-size: 0.95em; width: 100px; flex: 0 0 100px; }
-        .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.8em; font-weight: bold; color: white; text-align: center; width: 80px; flex: 0 0 80px; box-sizing: border-box; }
+        .badge { 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            font-size: 0.8em; 
+            font-weight: bold; 
+            color: white; 
+            text-align: center; 
+            width: 80px;          /* ★長さを80pxに固定 */
+            flex: 0 0 80px;       /* ★勝手に伸び縮みするのを防ぐ */
+            box-sizing: border-box; 
+        }
         .badge.event { background-color: var(--primary-color); }
         .badge.info { background-color: #7f8c8d; }
         .news-title { flex: 1; font-size: 1.05em; min-width: 200px; }
@@ -102,8 +119,7 @@ const slideImages = [...new Set(rawSlideImages)];
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
         .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.08); transition: transform 0.2s; display: flex; flex-direction: column; color: var(--text-color); }
         .card:hover { transform: translateY(-5px); }
-        .card-img { width: 100%; height: 180px; object-fit: cover; background-color: #ddd; cursor: pointer; transition: 0.3s; }
-        .card-img:hover { opacity: 0.8; }
+        .card-img { width: 100%; height: 180px; object-fit: cover; background-color: #ddd; cursor: pointer; }
         .card-content { padding: 15px; flex: 1; }
         .card-date { font-size: 0.85em; color: #777; margin-bottom: 5px; }
         .card-title { font-weight: bold; font-size: 1.05em; margin: 0 0 10px 0; line-height: 1.4; }
@@ -115,39 +131,6 @@ const slideImages = [...new Set(rawSlideImages)];
         .more-btn { display: block; width: 100%; padding: 12px; margin-top: 20px; text-align: center; background-color: white; border: 2px solid var(--primary-color); color: var(--primary-color); font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
         .more-btn:hover { background-color: var(--primary-color); color: white; }
 
-        /* ======== 活動報告の大きく表示するモーダル ======== */
-        .report-modal {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 10000;
-            display: none; /* JSでflexに変更 */
-            align-items: center;
-            justify-content: center;
-        }
-        .report-modal-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.75);
-            cursor: pointer;
-        }
-        .report-modal-body {
-            position: relative;
-            background: white;
-            width: 90%;
-            max-width: 800px;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 10001;
-            animation: fadeIn 0.2s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         footer { background-color: #2c3e50; color: #ddd; padding: 40px 20px 20px; margin-top: 60px; font-size: 0.9em; }
         .footer-inner { max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between; }
         .footer-info p { margin: 5px 0; }
@@ -158,7 +141,6 @@ const slideImages = [...new Set(rawSlideImages)];
             nav ul { flex-wrap: wrap; justify-content: center; gap: 10px; font-size: 0.9em; }
             .document-item { flex-direction: column; align-items: flex-start; gap: 10px; }
             .document-btn { width: 100%; justify-content: center; box-sizing: border-box; }
-            .report-modal-body { padding: 20px; width: 95%; }
         }
     </style>
 </head>
@@ -181,6 +163,7 @@ const slideImages = [...new Set(rawSlideImages)];
         </div>
     </header>
 
+    <!-- ヒーローエリア。抽出した画像URL配列をデータ属性として渡す -->
     <div class="hero" id="hero-slider" data-images={JSON.stringify(slideImages)}>
         <div class="hero-content">
             <h2>表面技術とスマートプロセスの発展へ</h2>
@@ -189,16 +172,19 @@ const slideImages = [...new Set(rawSlideImages)];
     </div>
 
     <div class="container">
-        <!-- 概要 -->
+        <!-- 一般社団法人 表面技術協会 概要 -->
         <section id="about-sfj" style="margin-bottom: 60px;">
             <div style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 30px;">
                 <h2 class="section-title" style="margin-top: 0; border-bottom: none; padding-bottom: 0;">一般社団法人 表面技術協会 概要</h2>
                 <p style="color: #666; font-size: 0.95em; margin-bottom: 20px;">当協会（本部）の組織概要および活動領域についてご紹介します。</p>
+
                 <details style="border: 1px solid var(--border-color); border-radius: 6px; padding: 15px 20px; background: #fafafa;">
-                    <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color); font-size: 1.1em;">協会概要・沿革・活動領域を詳しく見る</summary>
+                    <summary style="cursor: pointer; font-weight: bold; color: var(--primary-color); font-size: 1.1em;">
+                        協会概要・沿革・活動領域を詳しく見る
+                    </summary>
                     <div style="margin-top: 20px; line-height: 1.8; font-size: 0.95em; color: #333;">
                         <h3 style="color: var(--primary-color); font-size: 1.1em; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-top: 0;">1. はじめに</h3>
-                        <p>表面技術協会は、金属をはじめ、プラスチック、セラミック等の素材へのめっき、化成処理，塗装，研磨，洗浄，熱処理などの技術とその関連分野を扱っております。<br>現在の会員数は、<strong>個人正会員 約1,700名、団体正会員 約360社</strong>です。</p>
+                        <p>表面技術協会は、金属をはじめ、プラスチック、セラミック等の素材へのめっき、化成処理，塗装，研磨，洗浄，熱処理などの技術とその関連分野を扱っております。<br>会員は、表面技術に携わる研究者、技術者、企業、研究機関、学生などから構成されており、会員組織の学術団体として積極的な活動を展開しております。<br>現在の会員数は、<strong>個人正会員 約1,700名、団体正会員 約360社</strong>です。</p>
                         
                         <h3 style="color: var(--primary-color); font-size: 1.1em; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-top: 25px;">2. 沿革</h3>
                         <ul style="padding-left: 20px; margin: 10px 0;">
@@ -206,12 +192,19 @@ const slideImages = [...new Set(rawSlideImages)];
                             <li><strong>1989年01月01日：</strong> 名称を「社団法人表面技術協会」に変更</li>
                             <li><strong>2011年01月04日：</strong> 公益法人改革にともなう新法人格への移行により、「一般社団法人表面技術協会」として設立登記</li>
                         </ul>
+
+                        <h3 style="color: var(--primary-color); font-size: 1.1em; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-top: 25px;">3. 活動領域</h3>
+                        <p><strong>○ 表面の物理的被覆に関わる分野</strong><br>物理蒸着（PVD），溶射，溶融めっき，吸着，塗布・塗装，泳動電着（電着塗装），ライニング，イオン注入，拡散被覆</p>
+                        <p><strong>○ 表面の化学的被覆に関わる分野</strong><br>化学蒸着（CVD），電気めっき・電鋳，無電解めっき，アノード析出，熱分解・ゾル－ゲル法，熱処理（酸化・窒化・炭化），アノード酸化，化成処理</p>
+                        <p><strong>○ 表面からの物質除去に関わる分野</strong><br>機械研磨・研削，化学研磨・電解研磨，化学エッチング・電解エッチング，気相エッチング，電解加工，洗浄</p>
+                        <p><strong>○ 表面処理の実務に関わる分野</strong><br>プロセス管理（省力・省エネルギー），検査・品質管理，作業環境対策，廃ガス・廃水・廃棄物対策，資源リサイクル対策，工場設備・機器・部品</p>
+                        <p><strong>○ 表面技術に関連する諸分野</strong><br>表面解析・表面分析，表面物性，表面機能応用（触媒，センサーなど），電析応用（金属微粉・電池など），腐食・防食，微細加工プロセス（半導体など）</p>
                     </div>
                 </details>
             </div>
         </section>
 
-        <!-- 新着情報 -->
+        <!-- 新着情報（イベントは10件まで・詳細展開） -->
         <section id="news" style="margin-bottom: 60px;">
             <h2 class="section-title">新着情報・イベント予定</h2>
             <ul class="news-list" id="list-events">
@@ -240,9 +233,11 @@ const slideImages = [...new Set(rawSlideImages)];
             )}
         </section>
 
-        <!-- 総会・公開資料 -->
+        <!-- 総会・公開資料（6件まで） -->
         <section id="documents" style="margin-bottom: 60px;">
             <h2 class="section-title">総会・公開資料</h2>
+            <p style="color: #666; font-size: 0.95em; margin-bottom: 15px;">当支部の事業計画、決算、規程等の資料（PDF）をダウンロードいただけます。</p>
+            
             <ul class="document-list" id="list-docs">
                 {documents.length === 0 ? (
                     <p style="padding: 10px; color: #666;">公開資料が登録されていません。</p>
@@ -263,7 +258,7 @@ const slideImages = [...new Set(rawSlideImages)];
             )}
         </section>
 
-        <!-- 活動報告（サムネイルホバーでモーダル展開） -->
+        <!-- 活動報告（6件まで・写真と詳細展開） -->
         <section id="reports" style="margin-bottom: 60px;">
             <h2 class="section-title">活動報告ピックアップ</h2>
             <p style="color: #666; font-size: 0.95em; margin-bottom: 20px;">支部の見学会や研究交流など、最近の活動の様子をご紹介します。</p>
@@ -274,42 +269,26 @@ const slideImages = [...new Set(rawSlideImages)];
                 ) : (
                     reports.map((report: any, index: number) => (
                         <div class={`card ${index >= 6 ? "hidden-item" : ""}`}>
-                            
-                            {/* ★ サムネイルにマウスを乗せる(mouseenter)と大きく表示 ★ */}
+                            {/* サムネイルをクリックで詳細を開く（onclickで直後のdetailsを操作） */}
                             {report.thumnail && (
-                                <img 
-                                    src={report.thumnail.url} 
-                                    alt="活動サムネイル" 
-                                    class="card-img" 
-                                    onmouseenter={`openReportModal('report-data-${index}')`}
-                                    onclick={`openReportModal('report-data-${index}')`} 
-                                />
+                                <img src={report.thumnail.url} alt="" class="card-img" onclick="this.parentElement.querySelector('details').open = true;" />
                             )}
-                            
                             <div class="card-content">
                                 <div class="card-date">{new Date(report.date).toLocaleDateString()}</div>
                                 <h3 class="card-title">{report.title}</h3>
-                            </div>
-                            
-                            {/* モーダル用の隠しデータ */}
-                            <div id={`report-data-${index}`} style="display: none;">
-                                <h2 style="color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-top: 0;">{report.title}</h2>
-                                <p style="color: #777; font-size: 0.9em; margin-bottom: 20px;">{new Date(report.date).toLocaleDateString()}</p>
                                 
-                                <div style="line-height: 1.8; color: #333;">
-                                    {report.content && <div set:html={report.content}></div>}
-                                    
-                                    {report.picture && report.picture.map((pic: any) => (
-                                        <div style="margin-top: 20px; text-align: center;">
-                                            <img src={pic.url} alt="活動写真" style="max-width: 100%; max-height: 500px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
-                                        </div>
-                                    ))}
-                                </div>
-                                <div style="text-align: center; margin-top: 30px;">
-                                    <button onclick="closeReportModal()" style="padding: 10px 30px; background: #666; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">閉じる</button>
-                                </div>
+                                <details class="news-detail" style="margin-top: 15px;">
+                                    <summary>活動内容・写真を見る</summary>
+                                    <div style="margin-top: 10px;">
+                                        {report.content && <div set:html={report.content}></div>}
+                                        {report.picture && report.picture.map((pic: any) => (
+                                            <div style="margin-top: 10px;">
+                                                <img src={pic.url} alt="活動写真" style="max-width: 100%; border-radius: 4px;" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </details>
                             </div>
-
                         </div>
                     ))
                 )}
@@ -319,7 +298,7 @@ const slideImages = [...new Set(rawSlideImages)];
             )}
         </section>
 
-        <!-- 役員名簿 -->
+        <!-- 役員名簿（6件まで） -->
         <section id="officers">
             <h2 class="section-title">役員名簿</h2>
             <ul class="document-list" id="list-officers">
@@ -341,64 +320,49 @@ const slideImages = [...new Set(rawSlideImages)];
                 <button class="more-btn" onclick="showAll('list-officers', this)">すべて表示する</button>
             )}
         </section>
+
     </div>
 
     <footer>
         <div class="footer-inner">
             <div class="footer-info">
                 <h3>一般社団法人 表面技術協会 東北支部</h3>
+                <p>支部事務局</p>
                 <p>Email: sfj.tohoku@gmail.com</p>
             </div>
-            <div class="footer-bottom">
-                &copy; 2026 The Surface Finishing Society of Japan, Tohoku Branch. All rights reserved.
+            <div class="footer-links">
+                <p><strong>関連リンク</strong></p>
+                <p>▶ <a href="https://www.sfj.or.jp/" target="_blank">一般社団法人 表面技術協会（本部）</a></p>
             </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 The Surface Finishing Society of Japan, Tohoku Branch. All rights reserved.
         </div>
     </footer>
 
-    <!-- ======= 画面全体を覆う活動報告のモーダル ======= -->
-    <div id="global-report-modal" class="report-modal">
-        <!-- 背景の暗い部分（クリックで閉じる） -->
-        <div class="report-modal-overlay" onclick="closeReportModal()"></div>
-        <!-- 詳細コンテンツ部分（マウスが外れたら閉じる） -->
-        <div class="report-modal-body" id="report-modal-body" onmouseleave="closeReportModal()">
-            <!-- JSでコンテンツを流し込む -->
-        </div>
-    </div>
-
     <!-- スクリプト群 -->
     <script is:inline>
-        // もっと見る（すべて表示）
+        // もっと見る（すべて表示）機能
         function showAll(listId, button) {
             const list = document.getElementById(listId);
-            list.querySelectorAll('.hidden-item').forEach(item => item.classList.remove('hidden-item'));
+            const hiddenItems = list.querySelectorAll('.hidden-item');
+            hiddenItems.forEach(item => {
+                item.classList.remove('hidden-item');
+            });
             button.style.display = 'none';
         }
 
-        // --- 活動報告 モーダル機能 ---
-        function openReportModal(dataId) {
-            const dataHtml = document.getElementById(dataId).innerHTML;
-            const modal = document.getElementById('global-report-modal');
-            const modalBody = document.getElementById('report-modal-body');
-            
-            modalBody.innerHTML = dataHtml;
-            modal.style.display = 'flex'; // hidden-item解除相当
-        }
-
-        function closeReportModal() {
-            const modal = document.getElementById('global-report-modal');
-            modal.style.display = 'none';
-        }
-
-        // --- スライドショー機能 ---
+        // スライドショー機能
         document.addEventListener("DOMContentLoaded", () => {
             const hero = document.getElementById('hero-slider');
             if (!hero) return;
 
+            // HTMLのデータ属性から画像URLの配列を取得
             let images = [];
             try {
                 images = JSON.parse(hero.getAttribute('data-images') || '[]');
             } catch(e) {
-                console.error("画像の読み込みに失敗");
+                console.error("画像の読み込みに失敗しました");
             }
 
             if (images.length > 0) {
@@ -407,10 +371,13 @@ const slideImages = [...new Set(rawSlideImages)];
                     const j = Math.floor(Math.random() * (i + 1));
                     [images[i], images[j]] = [images[j], images[i]];
                 }
-                
+
                 let currentIndex = 0;
+
+                // 最初の画像を設定
                 hero.style.backgroundImage = `url('${images[currentIndex]}')`;
 
+                // 5秒ごとに背景画像を切り替え
                 setInterval(() => {
                     currentIndex = (currentIndex + 1) % images.length;
                     hero.style.backgroundImage = `url('${images[currentIndex]}')`;
