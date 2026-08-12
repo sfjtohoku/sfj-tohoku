@@ -1,16 +1,20 @@
 ---
 import { client } from '../lib/microcms';
 
-// microCMSから各APIのデータを最大100件まで取得するように変更
-const eventsRes = await client.get({ endpoint: 'events', queries: { limit: 100 } }).catch(() => ({ contents: [] }));
-const documentsRes = await client.get({ endpoint: 'general-meetings', queries: { limit: 100 } }).catch(() => ({ contents: [] }));
-const reportsRes = await client.get({ endpoint: 'reports', queries: { limit: 100 } }).catch(() => ({ contents: [] }));
-const officersRes = await client.get({ endpoint: 'officers', queries: { limit: 100 } }).catch(() => ({ contents: [] }));
+// microCMSから各APIのデータを最大100件まで取得
+// queries に orders: '-date' を追加し、API側で「日時」が新しい順に取得するよう指示
+const eventsRes = await client.get({ endpoint: 'events', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
+const documentsRes = await client.get({ endpoint: 'general-meetings', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
+const reportsRes = await client.get({ endpoint: 'reports', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
+const officersRes = await client.get({ endpoint: 'officers', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
 
-const events = eventsRes.contents;
-const documents = documentsRes.contents;
-const reports = reportsRes.contents;
-const officers = officersRes.contents;
+// 念のため、プログラム（JavaScript）側でも確実に「date（日時）」が新しい順に並び替える
+const sortByDateDesc = (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime();
+
+const events = eventsRes.contents.sort(sortByDateDesc);
+const documents = documentsRes.contents.sort(sortByDateDesc);
+const reports = reportsRes.contents.sort(sortByDateDesc);
+const officers = officersRes.contents.sort(sortByDateDesc);
 
 // --- スライドショー用の画像抽出 ---
 const rawSlideImages = [];
@@ -192,7 +196,6 @@ const slideImages = [...new Set(rawSlideImages)];
         <!-- 概要 -->
         <section id="about-sfj" style="margin-bottom: 60px;">
             <div style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 30px;">
-                <!-- ここに border-left: none; padding-left: 0; を追加して縦棒を非表示にしました -->
                 <h2 class="section-title" style="margin-top: 0; border-bottom: none; padding-bottom: 0; border-left: none; padding-left: 0;">一般社団法人 表面技術協会 概要</h2>
                 <p style="color: #666; font-size: 0.95em; margin-bottom: 20px;">当協会（本部）の組織概要および活動領域についてご紹介します。</p>
                 <details style="border: 1px solid var(--border-color); border-radius: 6px; padding: 15px 20px; background: #fafafa;">
