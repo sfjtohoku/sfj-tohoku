@@ -173,8 +173,8 @@ const slideImages = [...new Set(rawSlideImages)];
             <nav>
                 <ul>
                     <li><a href="#news">新着情報</a></li>
-                    <li><a href="#documents">総会・公開資料</a></li>
                     <li><a href="#reports">活動報告</a></li>
+                    <li><a href="#documents">総会・公開資料</a></li>
                     <li><a href="#officers">役員名簿</a></li>
                 </ul>
             </nav>
@@ -240,29 +240,6 @@ const slideImages = [...new Set(rawSlideImages)];
             )}
         </section>
 
-        <!-- 総会・公開資料 -->
-        <section id="documents" style="margin-bottom: 60px;">
-            <h2 class="section-title">総会・公開資料</h2>
-            <ul class="document-list" id="list-docs">
-                {documents.length === 0 ? (
-                    <p style="padding: 10px; color: #666;">公開資料が登録されていません。</p>
-                ) : (
-                    documents.map((doc: any, index: number) => (
-                        <li class={`document-item ${index >= 6 ? "hidden-item" : ""}`}>
-                            <div class="document-info">
-                                <div class="document-year">{doc.yearlabel} ({new Date(doc.date).toLocaleDateString()} 公開)</div>
-                                <div class="document-title">{doc.title}</div>
-                            </div>
-                            <a href={doc.file} target="_blank" rel="noopener noreferrer" class="document-btn">資料を表示</a>
-                        </li>
-                    ))
-                )}
-            </ul>
-            {documents.length > 6 && (
-                <button class="more-btn" onclick="showAll('list-docs', this)">すべて表示する</button>
-            )}
-        </section>
-
         <!-- 活動報告（サムネイルホバーでモーダル展開） -->
         <section id="reports" style="margin-bottom: 60px;">
             <h2 class="section-title">活動報告ピックアップ</h2>
@@ -316,6 +293,29 @@ const slideImages = [...new Set(rawSlideImages)];
             </div>
             {reports.length > 6 && (
                 <button class="more-btn" onclick="showAll('list-reports', this)">すべて表示する</button>
+            )}
+        </section>
+
+        <!-- 総会・公開資料 -->
+        <section id="documents" style="margin-bottom: 60px;">
+            <h2 class="section-title">総会・公開資料</h2>
+            <ul class="document-list" id="list-docs">
+                {documents.length === 0 ? (
+                    <p style="padding: 10px; color: #666;">公開資料が登録されていません。</p>
+                ) : (
+                    documents.map((doc: any, index: number) => (
+                        <li class={`document-item ${index >= 6 ? "hidden-item" : ""}`}>
+                            <div class="document-info">
+                                <div class="document-year">{doc.yearlabel} ({new Date(doc.date).toLocaleDateString()} 公開)</div>
+                                <div class="document-title">{doc.title}</div>
+                            </div>
+                            <a href={doc.file} target="_blank" rel="noopener noreferrer" class="document-btn">資料を表示</a>
+                        </li>
+                    ))
+                )}
+            </ul>
+            {documents.length > 6 && (
+                <button class="more-btn" onclick="showAll('list-docs', this)">すべて表示する</button>
             )}
         </section>
 
