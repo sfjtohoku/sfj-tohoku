@@ -187,7 +187,7 @@ const slideImages = [...new Set(rawSlideImages)];
 
     <div class="hero" id="hero-slider" data-images={JSON.stringify(slideImages)}>
         <div class="hero-content">
-            <h2>表面技術で東北から世界へ</h2>
+            <h2>表面技術とスマートプロセスの発展へ</h2>
             <p>東北地域における産学官の連携を深め、<br>表面技術に関する学術・技術の交流と発展を推進しています。</p>
         </div>
     </div>
@@ -223,7 +223,7 @@ const slideImages = [...new Set(rawSlideImages)];
                     <p style="padding: 10px; color: #666;">現在、新着情報はありません。</p>
                 ) : (
                     events.map((item: any, index: number) => (
-                        <li class={index >= 10 ? "hidden-item" : ""}>
+                        <li class={index >= 6 ? "hidden-item" : ""}>
                             <div class="news-header">
                                 <div class="news-date">{new Date(item.date).toLocaleDateString()}</div>
                                 <div class={`badge ${item.category === 'イベント' ? 'event' : 'info'}`}>{item.category}</div>
@@ -239,7 +239,7 @@ const slideImages = [...new Set(rawSlideImages)];
                     ))
                 )}
             </ul>
-            {events.length > 10 && (
+            {events.length > 6 && (
                 <button class="more-btn" onclick="showAll('list-events', this)">すべて表示する</button>
             )}
         </section>
