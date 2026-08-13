@@ -300,7 +300,7 @@ const slideImages = [...new Set(rawSlideImages)];
             )}
         </section>
 
-<!-- 総会・公開資料 -->
+        <!-- 総会・公開資料 -->
         <section id="documents" style="margin-bottom: 60px;">
             <h2 class="section-title">総会・公開資料</h2>
             <ul class="document-list" id="list-docs">
@@ -365,9 +365,13 @@ const slideImages = [...new Set(rawSlideImages)];
                 <h3>一般社団法人 表面技術協会 東北支部</h3>
                 <p>Email: sfj.tohoku@gmail.com</p>
             </div>
-            <div class="footer-bottom">
-                &copy; 2026 The Surface Finishing Society of Japan, Tohoku Branch. All rights reserved.
+            <div class="footer-links">
+                <p><strong>関連リンク</strong></p>
+                <p>▶ <a href="https://www.sfj.or.jp/" target="_blank">一般社団法人 表面技術協会（本部）</a></p>
             </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 The Surface Finishing Society of Japan, Tohoku Branch. All rights reserved.
         </div>
     </footer>
 
@@ -433,7 +437,8 @@ const slideImages = [...new Set(rawSlideImages)];
                 }, 5000);
             }
         });
-　　　　// --- 簡易パスワード機能 ---
+
+        // --- 簡易パスワード機能 ---
         function checkPassword(url, correctPassword) {
             const input = prompt("この資料を閲覧するためのパスワードを入力してください:");
             if (input === correctPassword) {
