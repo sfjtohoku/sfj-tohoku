@@ -2,13 +2,12 @@
 import { client } from '../lib/microcms';
 
 // microCMSから各APIのデータを最大100件まで取得
-// queries に orders: '-date' を追加し、API側で「日時」が新しい順に取得するよう指示
 const eventsRes = await client.get({ endpoint: 'events', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
 const documentsRes = await client.get({ endpoint: 'general-meetings', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
 const reportsRes = await client.get({ endpoint: 'reports', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
 const officersRes = await client.get({ endpoint: 'officers', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
 
-// 念のため、プログラム（JavaScript）側でも確実に「date（日時）」が新しい順に並び替える
+// 確実に「date（日時）」が新しい順に並び替える
 const sortByDateDesc = (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime();
 
 const events = eventsRes.contents.sort(sortByDateDesc);
@@ -29,6 +28,13 @@ reports.forEach((report: any) => {
     }
 });
 const slideImages = [...new Set(rawSlideImages)];
+
+// ★追加：日本時間（JST）で YYYY/MM/DD 形式にフォーマットする関数
+const formatDate = (dateString: any) => {
+    return new Date(dateString).toLocaleDateString('ja-JP', { 
+        timeZone: 'Asia/Tokyo' 
+    });
+};
 ---
 
 <!DOCTYPE html>
@@ -225,7 +231,8 @@ const slideImages = [...new Set(rawSlideImages)];
                     events.map((item: any, index: number) => (
                         <li class={index >= 6 ? "hidden-item" : ""}>
                             <div class="news-header">
-                                <div class="news-date">{new Date(item.date).toLocaleDateString()}</div>
+                                <!-- ★ formatDate関数を使用 -->
+                                <div class="news-date">{formatDate(item.date)}</div>
                                 <div class={`badge ${item.category === 'イベント' ? 'event' : 'info'}`}>{item.category}</div>
                                 <div class="news-title"><strong>{item.title}</strong></div>
                             </div>
@@ -256,7 +263,6 @@ const slideImages = [...new Set(rawSlideImages)];
                     reports.map((report: any, index: number) => (
                         <div class={`card ${index >= 6 ? "hidden-item" : ""}`}>
                             
-                            {/* ★ サムネイルにマウスを乗せる(mouseenter)と大きく表示 ★ */}
                             {report.thumnail && (
                                 <img 
                                     src={report.thumnail.url} 
@@ -268,14 +274,15 @@ const slideImages = [...new Set(rawSlideImages)];
                             )}
                             
                             <div class="card-content">
-                                <div class="card-date">{new Date(report.date).toLocaleDateString()}</div>
+                                <!-- ★ formatDate関数を使用 -->
+                                <div class="card-date">{formatDate(report.date)}</div>
                                 <h3 class="card-title">{report.title}</h3>
                             </div>
                             
-                            {/* モーダル用の隠しデータ */}
                             <div id={`report-data-${index}`} style="display: none;">
                                 <h2 style="color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-top: 0;">{report.title}</h2>
-                                <p style="color: #777; font-size: 0.9em; margin-bottom: 20px;">{new Date(report.date).toLocaleDateString()}</p>
+                                <!-- ★ formatDate関数を使用 -->
+                                <p style="color: #777; font-size: 0.9em; margin-bottom: 20px;">{formatDate(report.date)}</p>
                                 
                                 <div style="line-height: 1.8; color: #333;">
                                     {report.content && <div set:html={report.content}></div>}
@@ -310,11 +317,11 @@ const slideImages = [...new Set(rawSlideImages)];
                     documents.map((doc: any, index: number) => (
                         <li class={`document-item ${index >= 6 ? "hidden-item" : ""}`}>
                             <div class="document-info">
-                                <div class="document-year">{doc.yearlabel} ({new Date(doc.date).toLocaleDateString()} 公開)</div>
+                                <!-- ★ formatDate関数を使用 -->
+                                <div class="document-year">{doc.yearlabel} ({formatDate(doc.date)} 公開)</div>
                                 <div class="document-title">{doc.title}</div>
                             </div>
                             
-                            {/* パスワードが設定されているかどうかでボタンを出し分ける */}
                             {doc.password ? (
                                 <button 
                                     class="document-btn" 
@@ -345,7 +352,8 @@ const slideImages = [...new Set(rawSlideImages)];
                     officers.map((off: any, index: number) => (
                         <li class={`document-item ${index >= 6 ? "hidden-item" : ""}`}>
                             <div class="document-info">
-                                <div class="document-year">{new Date(off.date).toLocaleDateString()} 公開</div>
+                                <!-- ★ formatDate関数を使用 -->
+                                <div class="document-year">{formatDate(off.date)} 公開</div>
                                 <div class="document-title">{off.yearlabel}</div>
                             </div>
                             <a href={off.pdfurl} target="_blank" rel="noopener noreferrer" class="document-btn">名簿を表示</a>
@@ -377,11 +385,8 @@ const slideImages = [...new Set(rawSlideImages)];
 
     <!-- ======= 画面全体を覆う活動報告のモーダル ======= -->
     <div id="global-report-modal" class="report-modal">
-        <!-- 背景の暗い部分（クリックで閉じる） -->
         <div class="report-modal-overlay" onclick="closeReportModal()"></div>
-        <!-- 詳細コンテンツ部分（マウスが外れたら閉じる） -->
         <div class="report-modal-body" id="report-modal-body" onmouseleave="closeReportModal()">
-            <!-- JSでコンテンツを流し込む -->
         </div>
     </div>
 
@@ -401,7 +406,7 @@ const slideImages = [...new Set(rawSlideImages)];
             const modalBody = document.getElementById('report-modal-body');
             
             modalBody.innerHTML = dataHtml;
-            modal.style.display = 'flex'; // hidden-item解除相当
+            modal.style.display = 'flex';
         }
 
         function closeReportModal() {
@@ -422,7 +427,6 @@ const slideImages = [...new Set(rawSlideImages)];
             }
 
             if (images.length > 0) {
-                // 配列をランダムにシャッフル
                 for (let i = images.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [images[i], images[j]] = [images[j], images[i]];
@@ -442,9 +446,9 @@ const slideImages = [...new Set(rawSlideImages)];
         function checkPassword(url, correctPassword) {
             const input = prompt("この資料を閲覧するためのパスワードを入力してください:");
             if (input === correctPassword) {
-                window.open(url, '_blank'); // 正解なら別タブで開く
+                window.open(url, '_blank'); 
             } else if (input !== null) {
-                alert("パスワードが間違っています。"); // キャンセル以外の誤入力
+                alert("パスワードが間違っています。"); 
             }
         }
     </script>
