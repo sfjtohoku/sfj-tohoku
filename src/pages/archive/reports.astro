@@ -1,8 +1,31 @@
 ---
 import { client } from '../../lib/microcms';
 
-const res = await client.get({ endpoint: 'reports', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
-const reports = res.contents.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+// ★ 何件でも自動で全件取得するループ処理関数
+const getAllData = async (endpoint: string) => {
+    let allData: any[] = [];
+    let offset = 0;
+    const limit = 100; 
+
+    while (true) {
+        const res = await client.get({ 
+            endpoint: endpoint, 
+            queries: { limit: limit, offset: offset, orders: '-date' } 
+        }).catch(() => ({ contents: [], totalCount: 0 }));
+        
+        allData = allData.concat(res.contents);
+        
+        if (allData.length >= res.totalCount || res.contents.length === 0) {
+            break;
+        }
+        offset += limit;
+    }
+    return allData;
+};
+
+// 全データを取得し、日付の新しい順に並び替え
+const rawReports = await getAllData('reports');
+const reports = rawReports.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 const getFiscalYear = (dateStr: string) => {
     const d = new Date(dateStr);

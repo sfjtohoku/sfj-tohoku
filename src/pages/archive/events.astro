@@ -1,19 +1,40 @@
 ---
 import { client } from '../../lib/microcms';
 
-// 上限100件（必要に応じて増やせます）を取得
-const res = await client.get({ endpoint: 'events', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
-const events = res.contents.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+// ★ 何件でも自動で全件取得するループ処理関数
+const getAllData = async (endpoint: string) => {
+    let allData: any[] = [];
+    let offset = 0;
+    const limit = 100; // 1回で取れる最大値は100
 
-// ★日付から「年度（4月〜翌3月）」を計算する関数
+    while (true) {
+        const res = await client.get({ 
+            endpoint: endpoint, 
+            queries: { limit: limit, offset: offset, orders: '-date' } 
+        }).catch(() => ({ contents: [], totalCount: 0 }));
+        
+        allData = allData.concat(res.contents);
+        
+        // 取得したデータ数が全体数(totalCount)に達したらループ終了
+        if (allData.length >= res.totalCount || res.contents.length === 0) {
+            break;
+        }
+        offset += limit; // 次の100件へ
+    }
+    return allData;
+};
+
+// 全データを取得し、日付の新しい順に並び替え
+const rawEvents = await getAllData('events');
+const events = rawEvents.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
 const getFiscalYear = (dateStr: string) => {
     const d = new Date(dateStr);
     let y = d.getFullYear();
-    if (d.getMonth() < 3) y--; // 1月〜3月は前年度扱い
+    if (d.getMonth() < 3) y--; 
     return `${y}年度`;
 };
 
-// 年度ごとにデータをグループ分けする
 const groupedEvents = events.reduce((acc: any, item: any) => {
     const y = getFiscalYear(item.date);
     if (!acc[y]) acc[y] = [];
