@@ -1,0 +1,100 @@
+---
+import { client } from '../../lib/microcms';
+
+const res = await client.get({ endpoint: 'officers', queries: { limit: 100, orders: '-date' } }).catch(() => ({ contents: [] }));
+const officers = res.contents.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+// microCMSで入力された「対象年度（yearlabel）」をそのまま見出しとしてグループ化
+const groupedOfficers = officers.reduce((acc: any, item: any) => {
+    const y = item.yearlabel || 'その他';
+    if (!acc[y]) acc[y] = [];
+    acc[y].push(item);
+    return acc;
+}, {});
+const sortedLabels = Object.keys(groupedOfficers).sort((a, b) => b.localeCompare(a));
+
+const formatDate = (dateString: any) => new Date(dateString).toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' });
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>過去の役員名簿一覧 | 一般社団法人 表面技術協会 東北支部</title>
+    <style>
+        :root { --primary-color: #003b73; --secondary-color: #005b9f; --bg-color: #f4f7f6; --text-color: #333; --border-color: #ddd; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: var(--text-color); line-height: 1.6; margin: 0; background-color: var(--bg-color); }
+        a { color: var(--primary-color); text-decoration: none; transition: 0.2s; }
+        a:hover { color: var(--secondary-color); text-decoration: underline; }
+        header { background-color: white; border-bottom: 3px solid var(--primary-color); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-inner { max-width: 1000px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo h1 { font-size: 1.5em; margin: 0; color: var(--primary-color); }
+        .logo span { font-size: 0.6em; color: #666; display: block; }
+        
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 60vh; }
+        .back-link { display: inline-block; margin-bottom: 20px; font-weight: bold; }
+        .page-title { font-size: 1.6em; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 40px; }
+        
+        .year-section { margin-bottom: 50px; }
+        .year-heading { font-size: 1.3em; background: #e9f2f9; color: var(--primary-color); padding: 10px 15px; border-left: 5px solid var(--primary-color); margin-bottom: 20px; border-radius: 0 4px 4px 0; }
+        
+        .document-list { list-style: none; padding: 0; margin: 0; }
+        .document-item { background: white; border-radius: 6px; margin-bottom: 15px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border-left: 4px solid #7f8c8d; }
+        .document-info { flex: 1; }
+        .document-year { font-weight: bold; color: #555; font-size: 0.9em; margin-bottom: 3px; }
+        .document-title { font-size: 1.1em; color: var(--text-color); font-weight: bold; }
+        .document-btn { background-color: var(--secondary-color); color: white; padding: 8px 15px; border-radius: 4px; font-size: 0.9em; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
+        .document-btn:hover { background-color: var(--primary-color); text-decoration: none; color: white; }
+        
+        footer { background-color: #2c3e50; color: #ddd; padding: 40px 20px 20px; margin-top: 60px; font-size: 0.9em; }
+        .footer-inner { max-width: 1000px; margin: 0 auto; text-align: center; }
+        @media (max-width: 768px) {
+            .document-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .document-btn { width: 100%; justify-content: center; box-sizing: border-box; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <span>The Surface Finishing Society of Japan</span>
+                <h1>一般社団法人 表面技術協会 東北支部</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="/#officers" class="back-link">← トップページに戻る</a>
+        <h2 class="page-title">過去の役員名簿一覧</h2>
+
+        {sortedLabels.length === 0 ? (
+            <p>データがありません。</p>
+        ) : (
+            sortedLabels.map((label) => (
+                <div class="year-section">
+                    <h3 class="year-heading">{label}</h3>
+                    <ul class="document-list">
+                        {groupedOfficers[label].map((off: any) => (
+                            <li class="document-item">
+                                <div class="document-info">
+                                    <div class="document-year">{formatDate(off.date)} 公開</div>
+                                    <div class="document-title">{off.yearlabel}</div>
+                                </div>
+                                <a href={off.pdfurl} target="_blank" rel="noopener noreferrer" class="document-btn">名簿を表示</a>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ))
+        )}
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            &copy; 2026 The Surface Finishing Society of Japan, Tohoku Branch. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>
