@@ -44,3 +44,4 @@ jobs:
         server-dir: /www/tohoku.sfj.or.jp/html/
         # Astroが書き出した完成品の入っているフォルダ
         local-dir: ./dist/
+        protocol: ftps
