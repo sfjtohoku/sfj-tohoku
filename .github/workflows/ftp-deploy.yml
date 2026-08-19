@@ -1,11 +1,9 @@
 name: Deploy to FTP
 
 on:
-  # GitHubのmainブランチにコードがPushされた時に作動します
   push:
     branches:
       - main
-  # microCMSで記事を更新・削除した時（Webhook）に作動します
   repository_dispatch:
     types: [microcms-update]
 
@@ -27,21 +25,17 @@ jobs:
       run: npm install
 
     - name: Build Project
-      # ここでmicroCMSから最新のデータを引っ張ってきてサイトを組み立てます
-      env:
-        MICROCMS_SERVICE_DOMAIN: ${{ secrets.MICROCMS_SERVICE_DOMAIN }}
-        MICROCMS_API_KEY: ${{ secrets.MICROCMS_API_KEY }}
-      run: npm run build
+      run: |
+        echo "MICROCMS_SERVICE_DOMAIN=${{ secrets.MICROCMS_SERVICE_DOMAIN }}" >> .env
+        echo "MICROCMS_API_KEY=${{ secrets.MICROCMS_API_KEY }}" >> .env
+        npm run build
 
     - name: Sync files via FTP
-      # 組み立てた完成品（distフォルダの中身）を学会のFTPサーバーへ転送します
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        # 学会指定のアップロード先フォルダ（ドキュメントルート）
         server-dir: /www/tohoku.sfj.or.jp/html/
-        # Astroが書き出した完成品の入っているフォルダ
         local-dir: ./dist/
         
